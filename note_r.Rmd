@@ -1,0 +1,53 @@
+# ライブラリのロード
+```{R}
+library("scales")
+library(tidyverse)
+```
+
+# 指数対策
+```{R}
+scientific_notation <- function(x) {
+     x <- format(x, scientific = TRUE)
+     x <- gsub("^(.*)e", "'\\1'e", x)
+     x <- gsub("e", "%*%10^", x)
+     x <- gsub('\\+', '', x)
+     parse(text = x)
+}
+```
+
+# 描画
+```{R}
+d <- function(csv, title, yscale=FALSE) {
+  df <- read.csv(csv)
+  p <- ggplot(df, aes(x=as.Date(date), y=value)) +
+    geom_line() +
+    geom_smooth(method=loess) +
+    labs(
+      title = title,
+      x = "Date",
+      y = "Amount"
+  )
+  if (yscale) {
+    p <- p + scale_y_continuous(label=scientific_notation)
+  }
+  print(p)
+}
+```
+
+# データ描画
+```{R}
+d("data/0702010202000010030.csv", "マネーストック統計＜日本銀行＞", TRUE)
+d("data/0702020201000010000.csv", "銀行貸出")
+d("data/0702020300000010010.csv", "コールレート（無担保Ｏ／Ｎ物）")
+d("data/0702020300000010020.csv", "新発10年国債利回り（月末終値）")
+d("data/0702020401000010010.csv", "東京インターバンク相場（円・ドル）")
+d("data/0702020501000010010.csv", "日経平均株価")
+d("data/0702020590000090010.csv", "東証株価指数（TOPIX）")
+d("data/0703010401010090000.csv", "消費者物価指数（総合）2015年基準")
+d("data/0704010101000010000.csv", "二人以上の世帯　消費支出")
+d("data/0706010400000090010.csv", "景気動向指数（一致）2015年基準")
+
+```
+
+
+

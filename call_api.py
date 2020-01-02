@@ -1,9 +1,11 @@
 import requests
 import json
 import json2csv
+import os
 import time
 
-api = 'https://dashboard.e-stat.go.jp/api/1.0/Json/getData?IndicatorCode={indicator}&TimeFrom={start}'
+# api = 'https://dashboard.e-stat.go.jp/api/1.0/Json/getData?IndicatorCode={indicator}&TimeFrom={start}'
+api = 'https://dashboard.e-stat.go.jp/api/1.0/Json/getData?IndicatorCode={indicator}&TimeFrom={start}&RegionCode=00000'
 
 STATS = {
     "0702020201000010000": "銀行貸出",
@@ -33,7 +35,7 @@ def main(indicator, start=20080100):
 
 
 if __name__ == "__main__":
-    # ind = '0704010101000010000'
+    os.makedirs("data", exist_ok=True)
     for ind in STATS:
         print('start:', ind)
         df = getData(ind, 20080100)  # dict型が返る
@@ -41,3 +43,11 @@ if __name__ == "__main__":
             json.dump(df, f, ensure_ascii=False)  # 辞書型からjsonへ
         json2csv.jsondata2csv(df)
         time.sleep(2)
+
+# if __name__ == "__main__":
+#     ind = '0702010202000010030'
+#     print('start:', ind)
+#     df = getData(ind, 20080100)  # dict型が返る
+#     with open('data/{}.json'.format(ind), mode='w', encoding='UTF-8') as f:
+#         json.dump(df, f, ensure_ascii=False)  # 辞書型からjsonへ
+#     json2csv.jsondata2csv(df)
